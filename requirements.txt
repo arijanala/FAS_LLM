@@ -1,0 +1,8 @@
+# Minimal requirements placeholder for FAS-LLM
+#
+# Add concrete packages as you implement the pipeline, for example:
+# - requests            # for HTTP requests to APIs / data sources
+# - pandas              # for data loading and aggregation
+# - python-dotenv       # for managing API keys via .env files
+# - openai / other LLM SDKs
+
