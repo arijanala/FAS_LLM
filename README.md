@@ -171,6 +171,33 @@ This repository is structured to support an implementation along these lines:
 
 At this stage, this repo is a **skeleton** ready for you to implement the concrete code and wiring to your choice of LLM (OpenAI, Azure, local models, etc.).
 
+### Sequential Diagram (FAS-LLM, LLM-Based Version)
+
+```mermaid
+sequenceDiagram
+    participant R as Researcher
+    participant D as Data Source<br/>(exports/APIs: Semantic Scholar, OpenAlex,…)
+    participant CFG as Taxonomy Config<br/>(topics & properties)
+    participant L as LLM Engine<br/>(classification & summarization)
+    participant A2 as Aggregator<br/>(year/property/publisher)
+    participant V2 as Visualization<br/>(dashboards & charts)
+
+    R->>D: Provide query/filters<br/>(topic, years, venues)
+    D-->>R: Exported corpus<br/>(CSV/JSON: title, abstract, year, citations,…)
+
+    R->>CFG: Define / edit taxonomy<br/>(natural language descriptions)
+    CFG-->>L: Topics & properties definitions
+
+    R->>L: Run analysis on corpus
+    L->>L: For each paper:<br/>• assign topics/properties<br/>• generate short summary
+    L-->>A2: Enriched corpus<br/>(paper + labels + summary)
+
+    A2->>A2: Aggregate metrics<br/>(per year × property, per year × publisher)
+    A2-->>V2: Structured data for charts
+
+    V2->>R: Interactive trends & drill-down views
+```
+
 ---
 
 ## Example Workflow (Modern Usage)
