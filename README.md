@@ -3,11 +3,90 @@
 This project is a modern reimagining of the framework described in the paper **“Framework for aiding surveys by natural language processing”** by Arijan Alla, Eftim Zdravevski, and Vladimir Trajkovik ([ICT Innovations 2017](https://proceedings.ictinnovations.org/2017/paper/448/framework-for-aiding-surveys-by-natural-language-processing), PDF: https://proceedings.ictinnovations.org/attachment/paper/448/framework-for-aiding-surveys-by-natural-language-processing.pdf).
 
 In the original framework (FAS), the pipeline relied on **custom crawlers and traditional NLP** (stemming, lemmatization, WordNet-based synonyms) to:
-- Query multiple digital libraries (Google Scholar, IEEE Xplore, Springer, etc.),
+- Query multiple digital libraries (Google Scholar, IEEE Xplore, Springer, ACM, etc.),
 - Collect metadata and abstracts,
 - Filter papers by citations and duplicates,
 - Search for properties/keywords in abstracts,
 - And finally generate **Excel-based charts** for analysis.
+
+---
+
+## Original FAS Workflow (2017)
+
+The core workflow described in the 2017 paper can be summarized as:
+
+```text
+User-provided keywords
+        │
+        ▼
+NLP preprocessing:
+  - stemming & lemmatization
+  - WordNet-based synonym expansion
+        │
+        ▼
+Digital libraries crawling:
+  - Google Scholar
+  - IEEE Xplore
+  - Springer
+  - ACM / other sources
+        │
+        ▼
+Raw results:
+  - titles, authors, year, citations, DOI, abstract, source
+        │
+        ▼
+Screening & filtering:
+  - remove papers with 0 citations
+  - remove duplicates (e.g. by DOI)
+        │
+        ▼
+Properties processing on abstracts:
+  - search for properties + synonyms
+  - apply stemming & lemmatization
+  - keep only papers mentioning at least one property
+        │
+        ▼
+Aggregated statistics:
+  - per year × property
+  - per year × publisher
+  - cumulative counts, etc.
+        │
+        ▼
+Visualization (Excel):
+  - charts of trends over years
+  - publisher/property comparisons
+```
+
+### Sequential Diagram (Original FAS)
+
+```mermaid
+sequenceDiagram
+    participant R as Researcher
+    participant NLP as NLP Module<br/>(stemming, lemmatization, WordNet)
+    participant C as Crawlers<br/>(Google Scholar, IEEE, Springer, ACM)
+    participant P as Properties Processor<br/>(abstract analysis)
+    participant A as Aggregator<br/>(year/property/publisher)
+    participant V as Visualization<br/>(Excel charts)
+
+    R->>NLP: Provide keywords & properties
+    NLP-->>R: Expanded list with stems & synonyms
+
+    R->>C: Start crawling with expanded keywords
+    C-->>R: Raw results (title, abstract, year, citations, DOI, source)
+
+    R->>C: Apply screening\n(remove 0-citation papers, duplicates)
+    C-->>P: Cleaned set of papers
+
+    P->>P: Search abstracts for properties\n(using stems & synonyms)
+    P-->>A: Papers tagged with properties
+
+    A->>A: Aggregate counts\n(per year × property, per year × publisher)
+    A-->>V: Tabular data for charts
+
+    V->>R: Trend graphs & figures (Excel)
+```
+
+This repository keeps that conceptual pipeline (keywords → enriched search → filtering → abstract-level property detection → trend visualization), but reimplements the “heavy lifting” with LLMs and modern data export APIs instead of custom HTML crawlers and purely keyword-based NLP.
 
 In this updated version, **FAS-LLM** keeps the same core goal—**helping researchers quickly build and explore survey corpora**—but replaces most of the low-level plumbing with **LLMs and modern APIs**, focusing on:
 - Easier data acquisition (via export APIs / manual CSVs instead of brittle crawlers),
